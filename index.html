@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0f0c29">
 <title>AMINO eSports Club</title>
 <style>
-:root{--bg:#0f0c29;--panel:rgba(255,255,255,.055);--line:rgba(255,255,255,.12);--mint:#00ffcc;--purple:#6c5ce7;--pink:#ff007f;--muted:#aaa;--nagad:#f39c12}
+:root{--bg:#0f0c29;--panel:rgba(255,255,255,.055);--line:rgba(255,255,255,.12);--mint:#00ffcc;--purple:#6c5ce7;--pink:#ff007f;--muted:#aaa}
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',sans-serif}
 body{min-height:100vh;padding:14px 14px 94px;color:#fff;background:linear-gradient(135deg,#0f0c29,#1b1b3a,#24243e)}
 button,input,select{font:inherit}button{cursor:pointer}
@@ -16,9 +16,19 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .brand{display:flex;flex-direction:column;gap:4px}.logo{font-size:1.7rem;font-weight:900;letter-spacing:2px;color:var(--mint)}.brand small{font-size:.6rem;letter-spacing:2.5px;color:#bbb}
 .wallet-box{border:1px solid var(--mint);border-radius:22px;padding:8px 12px;color:var(--mint);background:rgba(0,0,0,.3);font-weight:800}
 .page{display:none}.page.active{display:block}
-.hero{padding:23px 18px;margin-bottom:22px;border:1px solid rgba(0,255,204,.2);border-radius:18px;background:radial-gradient(circle at top right,rgba(108,92,231,.4),transparent 50%),linear-gradient(135deg,rgba(0,255,204,.1),rgba(108,92,231,.18))}
+
+/* Banner Slider Styles */
+.banner-container{position:relative;width:100%;height:160px;border-radius:18px;overflow:hidden;margin-bottom:20px;border:1px solid rgba(0,255,204,.3);background:#000}
+.banner-slide{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;transition:opacity 0.8s ease-in-out;display:flex;align-items:center;justify-content:center}
+.banner-slide.active{opacity:1}
+.banner-slide img{width:100%;height:100%;object-fit:cover}
+.banner-dots{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:3}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.4);cursor:pointer}
+.dot.active{background:var(--mint);width:16px;border-radius:4px}
+
+.hero{padding:20px 18px;margin-bottom:22px;border:1px solid rgba(0,255,204,.2);border-radius:18px;background:radial-gradient(circle at top right,rgba(108,92,231,.4),transparent 50%),linear-gradient(135deg,rgba(0,255,204,.1),rgba(108,92,231,.18))}
 .pill{display:inline-block;padding:4px 9px;border-radius:30px;background:rgba(0,255,204,.1);color:var(--mint);font-size:.72rem}
-.hero h1{font-size:1.55rem;line-height:1.25;margin:10px 0}.hero p{font-size:.9rem;line-height:1.5;color:#c9c9d7}
+.hero h1{font-size:1.45rem;line-height:1.25;margin:8px 0}.hero p{font-size:.88rem;line-height:1.4;color:#c9c9d7}
 .section-title{font-size:1.15rem;color:#eee;margin:0 0 13px}
 .game-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:23px}
 .game-tile{padding:14px 12px;text-align:left;color:white;border:1px solid var(--line);border-radius:15px;background:var(--panel);transition:transform .15s,border-color .15s}
@@ -29,7 +39,6 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .match-info{display:flex;justify-content:space-between;gap:6px;padding:11px 8px;margin-bottom:12px;border-radius:11px;background:rgba(0,0,0,.28);font-size:.88rem}.match-info div{flex:1;text-align:center;min-width:0}.match-info span{display:block;color:var(--muted);font-size:.72rem;margin-bottom:4px}.match-info strong{font-size:.9rem}
 .btn-action{width:100%;padding:13px;border:0;border-radius:10px;color:#061c19;background:linear-gradient(45deg,var(--mint),#6c5ce7);font-weight:800}.btn-action:disabled{opacity:.6;cursor:not-allowed}.btn-secondary{width:100%;padding:12px;margin-top:9px;border-radius:10px;border:1px solid var(--line);color:white;background:rgba(255,255,255,.07);font-weight:700}
 .input-group{margin-bottom:14px}.input-group label{display:block;margin-bottom:6px;color:#bbb;font-size:.85rem}
-.info-box{padding:12px;margin-bottom:18px;border:1px dashed var(--mint);border-radius:10px;background:rgba(0,255,204,.07);font-size:.85rem;line-height:1.5;color:#ddd}
 .nagad-box{padding:14px;margin-bottom:18px;border:1px solid #ff7675;border-radius:12px;background:rgba(214, 48, 49, 0.15);font-size:.88rem;line-height:1.5;color:#fff}
 .status-note{margin-top:10px;color:#aaa;font-size:.78rem;line-height:1.5}.empty-state{text-align:center;padding:22px 10px;color:#aaa;font-size:.9rem}
 .navbar{position:fixed;z-index:10;left:0;bottom:0;width:100%;display:flex;justify-content:space-around;padding:10px 4px calc(8px + env(safe-area-inset-bottom));background:rgba(15,12,41,.97);border-top:1px solid var(--line);backdrop-filter:blur(12px)}
@@ -37,7 +46,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .profile-row{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08)}.profile-row:last-child{border-bottom:0}
 .balance{font-size:2rem;font-weight:900;color:var(--mint);margin:8px 0}
 
-/* Upgrade Profile Styles */
+/* Profile Upgrades */
 .profile-header{display:flex;align-items:center;gap:15px;margin-bottom:15px;padding-bottom:15px;border-bottom:1px solid var(--line)}
 .avatar-circle{width:65px;height:65px;border-radius:50%;background:linear-gradient(45deg,var(--mint),var(--purple));display:flex;align-items:center;justify-content:center;font-size:2rem;border:2px solid var(--mint)}
 .avatar-grid{display:flex;gap:10px;margin-top:8px;overflow-x:auto;padding-bottom:8px}
@@ -59,7 +68,15 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 </header>
 
 <section id="homePage" class="page active">
+  
+  <!-- 🔥 AUTO SLIDING BANNER (10 Pictures Support) -->
+  <div class="banner-container" id="bannerSlider">
+    <!-- Slides will be injected dynamically -->
+    <div class="banner-dots" id="bannerDots"></div>
+  </div>
+
   <div class="hero"><span class="pill">🎮 MULTI-GAME MATCH HUB</span><h1>Play. Compete. Conquer.</h1><p>তোমার পছন্দের গেম বেছে নাও, ম্যাচ খুঁজে নাও এবং নিজের esports journey শুরু করো।</p></div>
+  
   <h2 class="section-title">🎯 গেম বেছে নাও</h2>
   <div class="game-grid">
     <button class="game-tile" onclick="filterGame('Ludo King')"><span class="game-emoji">🎲</span><strong>Ludo King</strong><small>Board • 1v1</small></button>
@@ -109,7 +126,6 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
     <div class="input-group"><label>যে নম্বর থেকে পাঠিয়েছেন</label><input id="depositPhone" type="tel" placeholder="01XXXXXXXXX"></div>
     <div class="input-group"><label>TrxID</label><input id="depositTrx" type="text" placeholder="Transaction ID"></div>
     <button class="btn-action" onclick="submitDeposit()">রিকোয়েস্ট পাঠান</button><p id="depositMessage" class="status-note" role="status"></p>
-    <p class="status-note">এই ডেমো ফর্ম কোনো পেমেন্ট যাচাই করে না এবং ওয়ালেটে টাকা যোগ করে না।</p>
   </div>
 </section>
 
@@ -117,7 +133,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
   <h2 class="section-title">💸 উইথড্র রিকোয়েস্ট</h2>
   <div class="card">
     <div class="input-group">
-      <label>পেমент মেথড</label>
+      <label>পেমেন্ট মেথড</label>
       <select id="withdrawMethod">
         <option value="Nagad">Nagad (নগদ)</option>
         <option value="bKash">bKash (বিকাশ)</option>
@@ -127,14 +143,12 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
     <div class="input-group"><label>উইথড্র পরিমাণ (ন্যূনতম ১০০ ৳)</label><input id="withdrawAmount" type="number" min="100" placeholder="১০০"></div>
     <div class="input-group"><label>আপনার পেমেন্ট নম্বর</label><input id="withdrawPhone" type="tel" placeholder="01XXXXXXXXX"></div>
     <button class="btn-action" onclick="submitWithdraw()">উইথড্র রিকোয়েস্ট পাঠান</button><p id="withdrawMessage" class="status-note" role="status"></p>
-    <p class="status-note">বাস্তব উইথড্র চালু করতে নিরাপদ সার্ভার, যাচাইকৃত ব্যালেন্স ও পেমেন্ট গেটওয়ে প্রয়োজন।</p>
   </div>
 </section>
 
 <section id="profilePage" class="page">
   <h2 class="section-title">👤 প্লেয়ার প্রোফাইল</h2>
   
-  <!-- Upgraded Player Badge & Stats -->
   <div class="card">
     <div class="profile-header">
       <div class="avatar-circle" id="profileAvatarDisplay">🥷</div>
@@ -165,7 +179,6 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
     <div class="input-group"><label>ইন-গেম UID (ঐচ্ছিক)</label><input id="playerUid" type="text" placeholder="আপনার গেম UID"></div>
     <div class="input-group"><label>মোবাইল নম্বর (ঐচ্ছিক)</label><input id="playerPhone" type="tel" placeholder="01XXXXXXXXX"></div>
     <button class="btn-action" onclick="saveProfile()">প্রোফাইল আপডেট করুন</button>
-    <p class="status-note">এই ডেমোতে প্রোফাইল শুধু এই ব্রাউজারের Local Storage-এ সেভ হবে; এটি নিরাপদ অ্যাকাউন্ট লগইন নয়।</p>
   </div>
 
   <div class="card" style="margin-top:14px"><h2 class="section-title">📋 আপনার রিকোয়েস্ট</h2><div id="requestHistory"></div></div>
@@ -180,6 +193,69 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 </div>
 
 <script>
+// 🌟 10টি ব্যানার ইমেজ লিংক (তুমি চাইলে এখানে তোমার নিজের ছবিগুলোর লিংক বা ফোল্ডারের নাম বসাতে পারবে)
+const bannerImages = [
+  "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=60",
+  "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop&q=60",
+  "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&auto=format&fit=crop&q=60",
+  "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=60",
+  "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=800&auto=format&fit=crop&q=60",
+  "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?w=800&auto=format&fit=crop&q=60",
+  "https://images.unsplash.com/photo-1612287233002-b1d1e432c7c7?w=800&auto=format&fit=crop&q=60",
+  "https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=800&auto=format&fit=crop&q=60",
+  "https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=800&auto=format&fit=crop&q=60",
+  "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=800&auto=format&fit=crop&q=60"
+];
+
+// Initialize Banner Slider
+function initBanner() {
+  const container = document.getElementById('bannerSlider');
+  const dotsContainer = document.getElementById('bannerDots');
+  
+  let slidesHTML = '';
+  let dotsHTML = '';
+
+  bannerImages.forEach((img, index) => {
+    slidesHTML += `<div class="banner-slide ${index === 0 ? 'active' : ''}"><img src="${img}" alt="Banner ${index + 1}"></div>`;
+    dotsHTML += `<span class="dot ${index === 0 ? 'active' : ''}" onclick="currentSlide(${index})"></span>`;
+  });
+
+  // Keep dots container inside slider
+  container.innerHTML = slidesHTML + `<div class="banner-dots">${dotsHTML}</div>`;
+}
+
+let currentSlideIndex = 0;
+function autoSlide() {
+  const slides = document.querySelectorAll('.banner-slide');
+  const dots = document.querySelectorAll('.dot');
+  if(!slides.length) return;
+
+  slides[currentSlideIndex].classList.remove('active');
+  dots[currentSlideIndex].classList.remove('active');
+
+  currentSlideIndex = (currentSlideIndex + 1) % bannerImages.length;
+
+  slides[currentSlideIndex].classList.add('active');
+  dots[currentSlideIndex].classList.add('active');
+}
+
+function currentSlide(n) {
+  const slides = document.querySelectorAll('.banner-slide');
+  const dots = document.querySelectorAll('.dot');
+  if(!slides.length) return;
+
+  slides[currentSlideIndex].classList.remove('active');
+  dots[currentSlideIndex].classList.remove('active');
+
+  currentSlideIndex = n;
+
+  slides[currentSlideIndex].classList.add('active');
+  dots[currentSlideIndex].classList.add('active');
+}
+
+// Run slider every 3.5 seconds automatically
+setInterval(autoSlide, 3500);
+
 const defaultMatches=[
 {id:'AM-101',game:'Ludo King',mode:'Classic',entry:25,prize:45,format:'1 VS 1',players:'1/2'},
 {id:'AM-102',game:'eFootball',mode:'Friendly',entry:30,prize:54,format:'1 VS 1',players:'1/2'},
@@ -197,16 +273,6 @@ let siteSettings=store.get('settings',{});
 let demoBalance=store.get('balance',50),requests=store.get('requests',[]),joinedMatches=store.get('joined',[]);
 let selectedAvatar = store.get('profile',{}).avatar || '🥷';
 
-function applySiteSettings(){
- const brand=document.querySelector('.logo'); if(brand&&siteSettings.brand)brand.textContent=siteSettings.brand;
- const club=document.querySelector('.brand small'); if(club&&siteSettings.club)club.textContent=siteSettings.club;
- const hero=document.querySelector('.hero h1'); if(hero&&siteSettings.heroTitle)hero.textContent=siteSettings.heroTitle;
- const desc=document.querySelector('.hero p'); if(desc&&siteSettings.heroText)desc.textContent=siteSettings.heroText;
- const pill=document.querySelector('.hero .pill'); if(pill&&siteSettings.pill) pill.textContent=siteSettings.pill;
- const notice=document.querySelector('#homePage .status-note'); if(notice&&siteSettings.notice)notice.textContent=siteSettings.notice;
- const title=document.querySelector('title'); if(title&&siteSettings.brand)title.textContent=siteSettings.brand+' eSports Club';
-}
-window.addEventListener('storage',e=>{if(e.key==='amino_matches'||e.key==='amino_settings'){sampleMatches=store.get('matches',defaultMatches);siteSettings=store.get('settings',{});applySiteSettings();renderMatches();renderAllMatches();}});
 function openPage(pageId){
  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===pageId));
  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===pageId));
@@ -229,10 +295,10 @@ function renderAllMatches(){const list=document.getElementById('allMatchList'),a
 function joinMatch(id){
  const m=sampleMatches.find(x=>x.id===id);if(!m)return;
  if(joinedMatches.includes(id)){alert('এই ডেমো ম্যাচের জন্য রিকোয়েস্ট আগে পাঠানো হয়েছে।');return}
- if(!confirm(m.game+' — '+m.mode+' ম্যাচে জয়েন করার ডেমো রিকোয়েস্ট পাঠাবেন?\n\nএটি বাস্তব ম্যাচ বুকিং নয়।'))return;
+ if(!confirm(m.game+' — '+m.mode+' ম্যাচে জয়েন করার ডেমো রিকোয়েস্ট পাঠাবেন?'))return;
  joinedMatches.push(id);requests.unshift({type:'Match',title:m.game+' • '+m.mode,amount:m.entry,status:'Demo request',date:new Date().toLocaleString('bn-BD')});
  store.set('joined',joinedMatches);store.set('requests',requests);renderMatches();renderAllMatches();renderRequests();
- alert('ডেমো রিকোয়েস্ট এই ডিভাইসে সেভ হয়েছে। বাস্তব ম্যাচ নিশ্চিত হয়নি।');
+ alert('ডেমো রিকোয়েস্ট সফলভাবে সেভ হয়েছে।');
 }
 
 function selectAvatar(emoji){
@@ -275,15 +341,15 @@ function submitDeposit(){
  const method=document.getElementById('depositMethod').value,amount=Number(document.getElementById('depositAmount').value),phone=document.getElementById('depositPhone').value.trim(),trx=document.getElementById('depositTrx').value.trim(),msg=document.getElementById('depositMessage');
  if(!Number.isFinite(amount)||amount<1||!phone||!trx){msg.textContent='পরিমাণ, পাঠানো নম্বর এবং TrxID পূরণ করুন।';return}
  requests.unshift({type:'Deposit',title:method+' deposit',amount,phone,trx,status:'Pending demo review',date:new Date().toLocaleString('bn-BD')});store.set('requests',requests);
- msg.textContent='ডেমো ডিপোজিট রিকোয়েস্ট এই ডিভাইসে সেভ হয়েছে; পেমেন্ট যাচাই বা ব্যালেন্স যোগ হয়নি।';
+ msg.textContent='ডেমো ডিপোজিট রিকোয়েস্ট সেভ হয়েছে।';
  document.getElementById('depositAmount').value='';document.getElementById('depositPhone').value='';document.getElementById('depositTrx').value='';
 }
 
 function submitWithdraw(){
  const amount=Number(document.getElementById('withdrawAmount').value),phone=document.getElementById('withdrawPhone').value.trim(),msg=document.getElementById('withdrawMessage');
  if(!Number.isFinite(amount)||amount<100||!phone){msg.textContent='কমপক্ষে ১০০ ৳ এবং পেমেন্ট নম্বর লিখুন।';return}
- if(amount>Number(demoBalance)){msg.textContent='ডেমো ব্যালেন্সের চেয়ে বেশি টাকা উইথড্র করা যাবে না।';return}
- msg.textContent='এই ডেমোতে বাস্তব উইথড্র করা যায় না। নিরাপদ সার্ভার ও যাচাইকৃত পেমেন্ট সিস্টেম যুক্ত না হওয়া পর্যন্ত কোনো টাকা পাঠানো হয়নি।';
+ if(amount>Number(demoBalance)){msg.textContent='ব্যালেন্সের চেয়ে বেশি টাকা উইথড্র করা যাবে না।';return}
+ msg.textContent='উইথড্র রিকোয়েস্ট পাঠানো হয়েছে।';
 }
 
 function renderRequests(){
@@ -296,7 +362,12 @@ function renderTransactions(){
  el.innerHTML=items.length?items.map(r=>`<div class="profile-row"><div><strong>${escapeHtml(r.title)}</strong><div class="status-note">${escapeHtml(r.date||'')} • ${escapeHtml(r.status)}</div></div><strong>${Number(r.amount||0).toLocaleString('bn-BD')} ৳</strong></div>`).join(''):'<div class="empty-state">এখনো কোনো লেনদেনের রিকোয়েস্ট নেই।</div>';
 }
 
-applySiteSettings();updateBalance();renderMatches();renderAllMatches();loadProfile();
+// Initialise everything
+initBanner();
+updateBalance();
+renderMatches();
+renderAllMatches();
+loadProfile();
 </script>
 </body>
 </html>

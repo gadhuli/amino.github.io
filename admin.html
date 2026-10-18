@@ -1,163 +1,1247 @@
+
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AMINO - Admin Dashboard</title>
-<style>
-:root{--bg:#0f0c29;--panel:rgba(255,255,255,.055);--line:rgba(255,255,255,.12);--mint:#00ffcc;--purple:#6c5ce7;--pink:#ff007f;--muted:#aaa}
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',sans-serif}
-body{min-height:100vh;padding:14px;color:#fff;background:linear-gradient(135deg,#0f0c29,#1b1b3a,#24243e)}
-.app{max-width:760px;margin:auto}
-.card{padding:16px;margin-bottom:14px;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
-.input-group{margin-bottom:12px}.input-group label{display:block;margin-bottom:5px;color:#bbb;font-size:.85rem}
-.input-group input,.input-group select,.input-group textarea{width:100%;padding:11px;border-radius:10px;border:1px solid var(--line);background:#17172c;color:white;outline:none}
-.btn-action{width:100%;padding:12px;border:0;border-radius:10px;color:#061c19;background:linear-gradient(45deg,var(--mint),#6c5ce7);font-weight:800;cursor:pointer}
-.btn-danger{background:#ff4757;color:#fff}
-.row{display:flex;gap:10px}.row .input-group{flex:1}
-h1,h2{color:var(--mint);margin-bottom:12px}
-.item-box{padding:10px;margin-bottom:8px;background:rgba(0,0,0,.3);border-radius:8px;display:flex;justify-content:space-between;align-items:center}
-#adminPanel{display:none}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10101c">
+  <title>AMINO Esports | Admin Panel</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --bg: #0b0b14;
+      --panel: #151524;
+      --panel2: #1d1d30;
+      --text: #f5f5ff;
+      --muted: #a6a6bf;
+      --primary: #8b5cf6;
+      --primary2: #6d28d9;
+      --green: #22c55e;
+      --red: #ef4444;
+      --border: #303047;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .hidden { display: none !important; }
+
+    .login-wrap {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background:
+        radial-gradient(circle at top, #292044 0, transparent 45%),
+        var(--bg);
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      padding: 30px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: 0 20px 70px #0005;
+    }
+
+    .logo {
+      width: 64px;
+      height: 64px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 15px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #a78bfa, #6d28d9);
+      font-size: 27px;
+      font-weight: 900;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    .login-card h1 { text-align: center; margin-bottom: 8px; }
+    .subtitle { text-align: center; color: var(--muted); line-height: 1.5; }
+
+    label {
+      display: block;
+      margin: 14px 0 7px;
+      color: #dedcf0;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      min-height: 44px;
+      padding: 12px;
+      color: var(--text);
+      background: #10101c;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      outline: none;
+    }
+
+    textarea { min-height: 95px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 11px 15px;
+      color: white;
+      background: var(--primary);
+      border: 0;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+
+    .btn:hover { filter: brightness(1.12); }
+    .btn:disabled { opacity: .55; cursor: not-allowed; }
+    .btn-block { width: 100%; margin-top: 20px; }
+    .btn-secondary { background: #34344b; }
+    .btn-green { background: #15803d; }
+    .btn-red { background: #b91c1c; }
+    .btn-small { padding: 7px 10px; font-size: 12px; }
+
+    .notice {
+      margin-top: 14px;
+      padding: 11px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .notice.error { background: #451b26; color: #fecaca; }
+    .notice.success { background: #123b2a; color: #bbf7d0; }
+    .notice.info { background: #24203e; color: #ddd6fe; }
+
+    .app { min-height: 100vh; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      padding: 15px 22px;
+      background: #11111fee;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+    }
+
+    .brand { font-size: 21px; font-weight: 900; }
+    .brand span { color: #a78bfa; }
+    .admin-email { color: var(--muted); font-size: 12px; margin-top: 5px; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 225px minmax(0, 1fr);
+      max-width: 1500px;
+      margin: auto;
+    }
+
+    .sidebar {
+      padding: 20px 12px;
+      border-right: 1px solid var(--border);
+      min-height: calc(100vh - 70px);
+    }
+
+    .nav-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-align: left;
+      padding: 13px;
+      margin-bottom: 6px;
+      color: #c5c5dc;
+      background: transparent;
+      border: 0;
+      border-radius: 10px;
+    }
+
+    .nav-btn.active, .nav-btn:hover {
+      background: #30254c;
+      color: white;
+    }
+
+    main { min-width: 0; padding: 25px; }
+    .page-title { font-size: 26px; margin-bottom: 7px; }
+    .page-description { color: var(--muted); font-size: 13px; line-height: 1.6; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin: 24px 0;
+    }
+
+    .stat, .card {
+      min-width: 0;
+      padding: 18px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .stat-label { color: var(--muted); font-size: 12px; }
+    .stat-number { font-size: 27px; font-weight: 900; margin-top: 12px; overflow-wrap: anywhere; }
+    .card { margin-bottom: 18px; }
+    .card h3 { margin-bottom: 8px; }
+    .card-description { color: var(--muted); font-size: 13px; line-height: 1.6; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0 14px;
+    }
+
+    .full { grid-column: 1 / -1; }
+    .form-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 12px;
+    }
+
+    table { width: 100%; border-collapse: collapse; min-width: 650px; }
+    th, td {
+      padding: 13px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      vertical-align: top;
+    }
+
+    th { color: #c4b5fd; background: #1c1b2d; }
+    td { overflow-wrap: anywhere; }
+    .muted { color: var(--muted); }
+    .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .pill {
+      display: inline-block;
+      padding: 5px 9px;
+      background: #34344b;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .pill.pending { background: #594216; color: #fde68a; }
+    .pill.approved, .pill.completed, .pill.paid { background: #15432d; color: #bbf7d0; }
+    .pill.rejected, .pill.failed, .pill.cancelled { background: #4b2028; color: #fecaca; }
+
+    .empty {
+      padding: 25px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .top-actions { display: flex; gap: 8px; align-items: center; }
+    .mobile-nav { display: none; }
+    .small-note { color: var(--muted); font-size: 12px; line-height: 1.7; }
+    .break { overflow-wrap: anywhere; }
+
+    @media (max-width: 900px) {
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      main { padding: 16px; }
+      .mobile-nav {
+        display: flex;
+        gap: 6px;
+        padding: 10px;
+        overflow-x: auto;
+        background: var(--panel);
+        border-bottom: 1px solid var(--border);
+      }
+      .mobile-nav .nav-btn { width: auto; flex: 0 0 auto; margin: 0; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 520px) {
+      .topbar { padding: 12px; }
+      .brand { font-size: 18px; }
+      .admin-email { max-width: 200px; overflow-wrap: anywhere; }
+      .top-actions .btn { padding: 9px; font-size: 12px; }
+      .stats { gap: 9px; }
+      .stat, .card { padding: 14px; }
+      .stat-number { font-size: 22px; }
+      .page-title { font-size: 22px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .full { grid-column: auto; }
+      .login-card { padding: 22px; }
+    }
+  </style>
 </head>
+
 <body>
-<div class="app">
+  <section id="loginScreen" class="login-wrap">
+    <div class="login-card">
+      <div class="logo">A</div>
+      <h1>AMINO <span style="color:#a78bfa">ADMIN</span></h1>
+      <p class="subtitle">Esports Management Dashboard</p>
 
-  <!-- Login Section -->
-  <div id="loginCard" class="card" style="margin-top: 50px;">
-    <h2>🔐 Admin Login</h2>
-    <div class="input-group">
-      <label>Admin PIN (Default: 1234)</label>
-      <input id="adminPin" type="password" placeholder="PIN দিন">
+      <form id="loginForm">
+        <label for="loginEmail">Admin Gmail</label>
+        <input
+          id="loginEmail"
+          type="email"
+          autocomplete="username"
+          placeholder="aminoesportsclub@gmail.com"
+          required
+        >
+
+        <label for="loginPassword">Password</label>
+        <input
+          id="loginPassword"
+          type="password"
+          autocomplete="current-password"
+          placeholder="Enter your Supabase password"
+          required
+        >
+
+        <button id="loginButton" class="btn btn-block" type="submit">
+          Login to Admin
+        </button>
+      </form>
+
+      <div id="loginMessage" aria-live="polite"></div>
+
+      <p class="small-note" style="margin-top:18px">
+        Login uses Supabase Authentication. Create the admin user in your
+        Supabase Dashboard before signing in.
+      </p>
     </div>
-    <button class="btn-action" onclick="checkLogin()">লগইন করুন</button>
-  </div>
+  </section>
 
-  <!-- Admin Dashboard Panel -->
-  <div id="adminPanel">
-    <h1>⚡ AMINO Admin Dashboard</h1>
-    
-    <!-- Site Settings Control -->
-    <div class="card">
-      <h2>⚙️ সাইট সেটিংস ও নগদ নম্বর</h2>
-      <div class="input-group"><label>ব্র্যান্ড নাম</label><input id="setBrand" type="text" value="AMINO"></div>
-      <div class="input-group"><label>নগদ পার্সোনাল নম্বর</label><input id="setNagad" type="text" value="01333088194"></div>
-      <div class="input-group"><label>পেমেন্ট নোটিশ / ইনফো</label><textarea id="setPayInfo">নগদ নম্বরে Send Money করার পর ট্রানজেকশন আইডি দিন।</textarea></div>
-      <button class="btn-action" onclick="saveSettings()">সেটিংস সেভ করুন</button>
-    </div>
-
-    <!-- Add New Match -->
-    <div class="card">
-      <h2>➕ নতুন ম্যাচ যোগ করুন</h2>
-      <div class="row">
-        <div class="input-group"><label>গেমের নাম</label><select id="matchGame"><option>Ludo King</option><option>eFootball</option><option>PUBG Mobile</option><option>Free Fire</option></select></div>
-        <div class="input-group"><label>মোড</label><input id="matchMode" type="text" placeholder="Classic / Clash Squad"></div>
+  <section id="appScreen" class="app hidden">
+    <header class="topbar">
+      <div>
+        <div class="brand">AMINO <span>ESPORTS</span></div>
+        <div id="signedInEmail" class="admin-email"></div>
       </div>
-      <div class="row">
-        <div class="input-group"><label>এন্ট্রি ফি (৳)</label><input id="matchEntry" type="number" placeholder="25"></div>
-        <div class="input-group"><label>প্রাইজ মানি (৳)</label><input id="matchPrize" type="number" placeholder="45"></div>
+      <div class="top-actions">
+        <button id="backupButton" class="btn btn-secondary">Backup</button>
+        <button id="logoutButton" class="btn btn-red">Logout</button>
       </div>
-      <div class="row">
-        <div class="input-group"><label>ফরম্যাট</label><input id="matchFormat" type="text" value="1 VS 1"></div>
-        <div class="input-group"><label>প্লেয়ার স্লট</label><input id="matchPlayers" type="text" value="1/2"></div>
-      </div>
-      <button class="btn-action" onclick="addNewMatch()">ম্যাচ লাইভ করুন</button>
+    </header>
+
+    <div class="mobile-nav" id="mobileNav"></div>
+
+    <div class="layout">
+      <aside class="sidebar" id="sidebarNav"></aside>
+      <main>
+        <section id="page-dashboard" class="page">
+          <h1 class="page-title">Dashboard</h1>
+          <p class="page-description">AMINO Esports management overview.</p>
+
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-label">Total Matches</div>
+              <div class="stat-number" id="statMatches">0</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Total Requests</div>
+              <div class="stat-number" id="statRequests">0</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Pending Requests</div>
+              <div class="stat-number" id="statPending">0</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Completed Requests</div>
+              <div class="stat-number" id="statCompleted">0</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Welcome to AMINO Admin</h3>
+            <p class="card-description">
+              Manage matches, payment settings, and locally saved deposit or
+              withdrawal requests from this dashboard.
+            </p>
+            <div class="notice info">
+              Important: this version saves management data in this browser's
+              localStorage. Supabase is used for admin authentication. Match
+              and request data will not automatically sync with the public app
+              or another device until database integration is completed.
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Recent Requests</h3>
+            <div id="recentRequests"></div>
+          </div>
+        </section>
+
+        <section id="page-matches" class="page hidden">
+          <h1 class="page-title">Matches</h1>
+          <p class="page-description">Create, edit, and delete match entries.</p>
+
+          <div class="card">
+            <h3 id="matchFormTitle">Add New Match</h3>
+            <form id="matchForm">
+              <input type="hidden" id="matchId">
+
+              <div class="form-grid">
+                <div>
+                  <label for="matchTitle">Match Title</label>
+                  <input id="matchTitle" required placeholder="Example: Solo Tournament">
+                </div>
+                <div>
+                  <label for="matchGame">Game</label>
+                  <input id="matchGame" required placeholder="Example: Free Fire">
+                </div>
+                <div>
+                  <label for="matchMode">Match Mode</label>
+                  <select id="matchMode">
+                    <option>Solo</option>
+                    <option>Duo</option>
+                    <option>Squad</option>
+                    <option>1v1</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="matchDate">Date & Time</label>
+                  <input id="matchDate" type="datetime-local">
+                </div>
+                <div>
+                  <label for="matchEntry">Entry Fee (৳)</label>
+                  <input id="matchEntry" type="number" min="0" step="0.01" value="0">
+                </div>
+                <div>
+                  <label for="matchPrize">Prize Pool (৳)</label>
+                  <input id="matchPrize" type="number" min="0" step="0.01" value="0">
+                </div>
+                <div>
+                  <label for="matchSlots">Total Slots</label>
+                  <input id="matchSlots" type="number" min="1" value="48">
+                </div>
+                <div>
+                  <label for="matchStatus">Status</label>
+                  <select id="matchStatus">
+                    <option value="Upcoming">Upcoming</option>
+                    <option value="Live">Live</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                </div>
+                <div class="full">
+                  <label for="matchDetails">Details / Room Info</label>
+                  <textarea id="matchDetails" placeholder="Match rules, instructions, room details..."></textarea>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button class="btn" type="submit" id="saveMatchButton">Save Match</button>
+                <button class="btn btn-secondary" type="button" id="cancelEditButton">Clear Form</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="card">
+            <h3>All Matches</h3>
+            <div id="matchesTable"></div>
+          </div>
+        </section>
+
+        <section id="page-requests" class="page hidden">
+          <h1 class="page-title">Deposit & Withdraw Requests</h1>
+          <p class="page-description">
+            Review requests and update their status.
+          </p>
+
+          <div class="card">
+            <div class="form-grid">
+              <div>
+                <label for="requestFilter">Filter by Status</label>
+                <select id="requestFilter">
+                  <option value="All">All Requests</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Approved">Approved</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+              </div>
+              <div>
+                <label for="requestSearch">Search</label>
+                <input id="requestSearch" placeholder="Name, phone, transaction ID...">
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div id="requestsTable"></div>
+          </div>
+        </section>
+
+        <section id="page-settings" class="page hidden">
+          <h1 class="page-title">Settings</h1>
+          <p class="page-description">Manage the basic payment and app information.</p>
+
+          <div class="card">
+            <h3>App & Payment Settings</h3>
+            <form id="settingsForm">
+              <label for="settingBrand">App Name</label>
+              <input id="settingBrand" value="AMINO Esports" required>
+
+              <label for="settingNagad">Nagad Payment Number</label>
+              <input id="settingNagad" inputmode="tel" value="01333088194" required>
+
+              <label for="settingPaymentNote">Payment Instructions</label>
+              <textarea id="settingPaymentNote" placeholder="Write payment instructions here..."></textarea>
+
+              <label for="settingSupport">Support Contact (optional)</label>
+              <input id="settingSupport" placeholder="Support phone or contact info">
+
+              <div class="form-actions">
+                <button class="btn" type="submit">Save Settings</button>
+                <button class="btn btn-secondary" type="button" id="resetSettingsButton">
+                  Reset Defaults
+                </button>
+              </div>
+            </form>
+            <div id="settingsMessage" aria-live="polite"></div>
+          </div>
+
+          <div class="card">
+            <h3>Data & Security</h3>
+            <p class="small-note">
+              Never put a Supabase service-role key in this HTML file.
+              The publishable key is intended for client-side use, but it
+              does not replace database Row Level Security (RLS).
+            </p>
+            <button id="exportButton" class="btn btn-secondary">Download JSON Backup</button>
+            <button id="importButton" class="btn btn-secondary">Restore JSON Backup</button>
+            <input id="importFile" type="file" accept=".json,application/json" class="hidden">
+            <div id="backupMessage" aria-live="polite"></div>
+          </div>
+        </section>
+      </main>
     </div>
+  </section>
 
-    <!-- Existing Matches List -->
-    <div class="card">
-      <h2>📋 বিদ্যমান ম্যাচসমূহ</h2>
-      <div id="adminMatchList"></div>
-    </div>
+  <script>
+    "use strict";
 
-    <!-- User Requests List -->
-    <div class="card">
-      <h2>📥 ডিপোজিট ও উইথড্র রিকোয়েস্ট</h2>
-      <div id="adminRequestsList"></div>
-    </div>
+    // AMINO Supabase project settings
+    const SUPABASE_URL = "https://fjxvuxlbcbagkhfttngw.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_MEzYRQ5w0kzWTXsZwI_3bg_dYBq5OxV";
+    const ADMIN_EMAIL = "aminoesportsclub@gmail.com";
 
-  </div>
-</div>
+    const DEFAULT_SETTINGS = {
+      brand: "AMINO Esports",
+      nagad: "01333088194",
+      paymentNote: "Send payment to the official Nagad number and keep your Transaction ID.",
+      support: ""
+    };
 
-<script>
-const store={
-  get(k,d){try{let v=localStorage.getItem('amino_'+k);return v?JSON.parse(v):d}catch(e){return d}},
-  set(k,v){try{localStorage.setItem('amino_'+k,JSON.stringify(v))}catch(e){}}
-};
+    // These values are browser-local, not shared across devices.
+    const STORAGE = {
+      matches: "amino_matches",
+      requests: "amino_requests",
+      settings: "amino_settings"
+    };
 
-function checkLogin(){
-  const pin = document.getElementById('adminPin').value;
-  if(pin === '1234'){
-    document.getElementById('loginCard').style.display = 'none';
-    document.getElementById('adminPanel').style.display = 'block';
-    loadAdminData();
-  } else {
-    alert('ভুল PIN! সঠিক PIN দিন (1234)।');
-  }
-}
+    let supabaseClient = null;
+    let currentUser = null;
+    let activePage = "dashboard";
+    let matches = [];
+    let requests = [];
+    let settings = { ...DEFAULT_SETTINGS };
 
-function loadAdminData(){
-  // Load settings
-  let settings = store.get('settings', {});
-  if(settings.brand) document.getElementById('setBrand').value = settings.brand;
-  
-  renderAdminMatches();
-  renderAdminRequests();
-}
+    const NAV_ITEMS = [
+      { id: "dashboard", label: "Dashboard", icon: "▦" },
+      { id: "matches", label: "Matches", icon: "🎮" },
+      { id: "requests", label: "Deposit / Withdraw", icon: "⇄" },
+      { id: "settings", label: "Settings", icon: "⚙" }
+    ];
 
-function saveSettings(){
-  let settings = store.get('settings', {});
-  settings.brand = document.getElementById('setBrand').value;
-  settings.nagadNum = document.getElementById('setNagad').value;
-  settings.paymentInfo = document.getElementById('setPayInfo').value;
-  store.set('settings', settings);
-  alert('সেটিংস সফলভাবে আপডেট হয়েছে!');
-}
+    const $ = id => document.getElementById(id);
 
-function addNewMatch(){
-  let matches = store.get('matches', []);
-  let newM = {
-    id: 'AM-' + Math.floor(100 + Math.random()*900),
-    game: document.getElementById('matchGame').value,
-    mode: document.getElementById('matchMode').value || 'Classic',
-    entry: Number(document.getElementById('matchEntry').value) || 20,
-    prize: Number(document.getElementById('matchPrize').value) || 35,
-    format: document.getElementById('matchFormat').value || '1 VS 1',
-    players: document.getElementById('matchPlayers').value || '1/2'
-  };
-  matches.unshift(newM);
-  store.set('matches', matches);
-  renderAdminMatches();
-  alert('নতুন ম্যাচ সফলভাবে যোগ করা হয়েছে!');
-}
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[char]);
+    }
 
-function deleteMatch(id){
-  let matches = store.get('matches', []);
-  matches = matches.filter(m => m.id !== id);
-  store.set('matches', matches);
-  renderAdminMatches();
-}
+    function showMessage(target, message, type = "info") {
+      const el = typeof target === "string" ? $(target) : target;
+      if (!el) return;
+      el.innerHTML = "";
+      const box = document.createElement("div");
+      box.className = "notice " + type;
+      box.textContent = message;
+      el.appendChild(box);
+    }
 
-function renderAdminMatches(){
-  let matches = store.get('matches', []);
-  let el = document.getElementById('adminMatchList');
-  el.innerHTML = matches.length ? matches.map(m => `
-    <div class="item-box">
-      <div><strong>${m.game} (${m.mode})</strong><br><small>Entry: ${m.entry}৳ | Prize: ${m.prize}৳</small></div>
-      <button class="btn-action btn-danger" style="width:auto; padding:6px 12px;" onclick="deleteMatch('${m.id}')">ডিলিট</button>
-    </div>
-  `).join('') : '<p style="color:#aaa">কোনো ম্যাচ নেই।</p>';
-}
+    function readLocal(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return fallback;
+        const value = JSON.parse(raw);
+        return value ?? fallback;
+      } catch (error) {
+        console.warn("Could not read local data:", key, error);
+        return fallback;
+      }
+    }
 
-function renderAdminRequests(){
-  let reqs = store.get('requests', []);
-  let el = document.getElementById('adminRequestsList');
-  el.innerHTML = reqs.length ? reqs.map((r, i) => `
-    <div class="item-box">
-      <div><strong>${r.title}</strong> - ${r.amount}৳<br><small>Phone: ${r.phone || 'N/A'} | Trx: ${r.trx || 'N/A'} | Status: ${r.status}</small></div>
-    </div>
-  `).join('') : '<p style="color:#aaa">কোনো রিকোয়েস্ট নেই।</p>';
-}
-</script>
+    function writeLocal(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function loadLocalData() {
+      const savedMatches = readLocal(STORAGE.matches, []);
+      const savedRequests = readLocal(STORAGE.requests, []);
+      const savedSettings = readLocal(STORAGE.settings, DEFAULT_SETTINGS);
+
+      matches = Array.isArray(savedMatches) ? savedMatches : [];
+      requests = Array.isArray(savedRequests) ? savedRequests : [];
+      settings = {
+        ...DEFAULT_SETTINGS,
+        ...(savedSettings && typeof savedSettings === "object" ? savedSettings : {})
+      };
+    }
+
+    function saveMatches() {
+      writeLocal(STORAGE.matches, matches);
+    }
+
+    function saveRequests() {
+      writeLocal(STORAGE.requests, requests);
+    }
+
+    function saveSettings() {
+      writeLocal(STORAGE.settings, settings);
+    }
+
+    function makeId() {
+      if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        return window.crypto.randomUUID();
+      }
+      return "amino-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+    }
+
+    function formatDate(value) {
+      if (!value) return "—";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return String(value);
+      return date.toLocaleString();
+    }
+
+    function money(value) {
+      const amount = Number(value || 0);
+      return "৳" + amount.toLocaleString("en-BD", {
+        maximumFractionDigits: 2
+      });
+    }
+
+    function statusClass(value) {
+      const normalized = String(value || "").toLowerCase();
+      if (["approved", "completed", "paid"].includes(normalized)) return "approved";
+      if (["rejected", "failed", "cancelled"].includes(normalized)) return "rejected";
+      if (normalized === "pending") return "pending";
+      return "";
+    }
+
+    function statusPill(value) {
+      const label = value || "Pending";
+      return '<span class="pill ' + statusClass(label) + '">' +
+        escapeHTML(label) + "</span>";
+    }
+
+    function renderNavigation() {
+      const html = NAV_ITEMS.map(item =>
+        '<button class="nav-btn ' + (activePage === item.id ? "active" : "") +
+        '" data-page="' + item.id + '" type="button">' +
+        '<span>' + item.icon + '</span><span>' + escapeHTML(item.label) + "</span></button>"
+      ).join("");
+
+      $("sidebarNav").innerHTML = html;
+      $("mobileNav").innerHTML = html;
+
+      document.querySelectorAll("[data-page]").forEach(button => {
+        button.addEventListener("click", () => showPage(button.dataset.page));
+      });
+    }
+
+    function showPage(page) {
+      if (!NAV_ITEMS.some(item => item.id === page)) return;
+      activePage = page;
+
+      document.querySelectorAll(".page").forEach(section => {
+        section.classList.add("hidden");
+      });
+
+      const selected = $("page-" + page);
+      if (selected) selected.classList.remove("hidden");
+
+      renderNavigation();
+      renderAll();
+    }
+
+    function showApp(user) {
+      currentUser = user;
+      $("loginScreen").classList.add("hidden");
+      $("appScreen").classList.remove("hidden");
+      $("signedInEmail").textContent = user.email || ADMIN_EMAIL;
+
+      loadLocalData();
+      fillSettingsForm();
+      renderNavigation();
+      renderAll();
+    }
+
+    function showLogin(message = "", type = "info") {
+      $("appScreen").classList.add("hidden");
+      $("loginScreen").classList.remove("hidden");
+      if (message) showMessage("loginMessage", message, type);
+    }
+
+    async function signIn(event) {
+      event.preventDefault();
+
+      const email = $("loginEmail").value.trim().toLowerCase();
+      const password = $("loginPassword").value;
+      const button = $("loginButton");
+
+      if (email !== ADMIN_EMAIL) {
+        showMessage("loginMessage", "This email is not authorized for the AMINO admin panel.", "error");
+        return;
+      }
+
+      if (!supabaseClient) {
+        showMessage("loginMessage", "Supabase could not initialize. Check your internet connection and project settings.", "error");
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "Signing in...";
+
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error) throw error;
+
+        if (!data.user || (data.user.email || "").toLowerCase() !== ADMIN_EMAIL) {
+          await supabaseClient.auth.signOut();
+          throw new Error("The authenticated account is not the configured admin.");
+        }
+
+        $("loginPassword").value = "";
+        $("loginMessage").innerHTML = "";
+        showApp(data.user);
+      } catch (error) {
+        showMessage(
+          "loginMessage",
+          error.message || "Login failed. Check your email, password, and Supabase Auth user.",
+          "error"
+        );
+      } finally {
+        button.disabled = false;
+        button.textContent = "Login to Admin";
+      }
+    }
+
+    async function signOut() {
+      if (!supabaseClient) return;
+      const button = $("logoutButton");
+      button.disabled = true;
+
+      try {
+        await supabaseClient.auth.signOut();
+        currentUser = null;
+        showLogin("You have been logged out.", "success");
+      } catch (error) {
+        showMessage("loginMessage", error.message || "Could not log out.", "error");
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    function renderAll() {
+      renderStats();
+      renderMatches();
+      renderRequests();
+      renderRecentRequests();
+    }
+
+    function renderStats() {
+      $("statMatches").textContent = matches.length;
+      $("statRequests").textContent = requests.length;
+      $("statPending").textContent = requests.filter(
+        item => String(item.status || "Pending").toLowerCase() === "pending"
+      ).length;
+      $("statCompleted").textContent = requests.filter(
+        item => ["approved", "completed"].includes(
+          String(item.status || "").toLowerCase()
+        )
+      ).length;
+    }
+
+    function renderMatches() {
+      const target = $("matchesTable");
+
+      if (!matches.length) {
+        target.innerHTML = '<div class="empty">No matches added yet.</div>';
+        return;
+      }
+
+      const sorted = [...matches].sort((a, b) =>
+        String(b.createdAt || "").localeCompare(String(a.createdAt || ""))
+      );
+
+      target.innerHTML = '<div class="table-wrap"><table>' +
+        "<thead><tr><th>Match</th><th>Entry</th><th>Prize</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody>" +
+        sorted.map(match => '<tr>' +
+          '<td><strong>' + escapeHTML(match.title) + '</strong><br><span class="muted">' +
+          escapeHTML(match.game || "") + " · " + escapeHTML(match.mode || "") +
+          "</span></td>" +
+          "<td>" + money(match.entryFee) + "</td>" +
+          "<td>" + money(match.prizePool) + "</td>" +
+          "<td>" + escapeHTML(formatDate(match.date)) + "</td>" +
+          "<td>" + statusPill(match.status) + "</td>" +
+          '<td><div class="actions">' +
+          '<button class="btn btn-small" data-edit-match="' + escapeHTML(match.id) + '">Edit</button>' +
+          '<button class="btn btn-small btn-red" data-delete-match="' + escapeHTML(match.id) + '">Delete</button>' +
+          "</div></td></tr>"
+        ).join("") +
+        "</tbody></table></div>";
+
+      target.querySelectorAll("[data-edit-match]").forEach(button => {
+        button.addEventListener("click", () => editMatch(button.dataset.editMatch));
+      });
+
+      target.querySelectorAll("[data-delete-match]").forEach(button => {
+        button.addEventListener("click", () => deleteMatch(button.dataset.deleteMatch));
+      });
+    }
+
+    function resetMatchForm() {
+      $("matchForm").reset();
+      $("matchId").value = "";
+      $("matchEntry").value = "0";
+      $("matchPrize").value = "0";
+      $("matchSlots").value = "48";
+      $("matchStatus").value = "Upcoming";
+      $("matchFormTitle").textContent = "Add New Match";
+      $("saveMatchButton").textContent = "Save Match";
+    }
+
+    function editMatch(id) {
+      const match = matches.find(item => String(item.id) === String(id));
+      if (!match) return;
+
+      $("matchId").value = match.id;
+      $("matchTitle").value = match.title || "";
+      $("matchGame").value = match.game || "";
+      $("matchMode").value = match.mode || "Solo";
+      $("matchDate").value = match.date && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(match.date)
+        ? match.date
+        : "";
+      $("matchEntry").value = match.entryFee ?? 0;
+      $("matchPrize").value = match.prizePool ?? 0;
+      $("matchSlots").value = match.slots ?? 48;
+      $("matchStatus").value = match.status || "Upcoming";
+      $("matchDetails").value = match.details || "";
+      $("matchFormTitle").textContent = "Edit Match";
+      $("saveMatchButton").textContent = "Update Match";
+      showPage("matches");
+      $("matchTitle").focus();
+    }
+
+    function deleteMatch(id) {
+      const match = matches.find(item => String(item.id) === String(id));
+      if (!match) return;
+      if (!confirm('Delete match "' + (match.title || "Untitled") + '"?')) return;
+
+      matches = matches.filter(item => String(item.id) !== String(id));
+      saveMatches();
+      renderAll();
+    }
+
+    function saveMatch(event) {
+      event.preventDefault();
+
+      const id = $("matchId").value;
+      const existing = matches.find(item => String(item.id) === String(id));
+
+      const match = {
+        id: id || makeId(),
+        title: $("matchTitle").value.trim(),
+        game: $("matchGame").value.trim(),
+        mode: $("matchMode").value,
+        date: $("matchDate").value,
+        entryFee: Math.max(0, Number($("matchEntry").value || 0)),
+        prizePool: Math.max(0, Number($("matchPrize").value || 0)),
+        slots: Math.max(1, Number($("matchSlots").value || 48)),
+        status: $("matchStatus").value,
+        details: $("matchDetails").value.trim(),
+        createdAt: existing?.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      if (!match.title || !match.game) {
+        alert("Please enter the match title and game.");
+        return;
+      }
+
+      if (existing) {
+        matches = matches.map(item =>
+          String(item.id) === String(id) ? match : item
+        );
+      } else {
+        matches.unshift(match);
+      }
+
+      try {
+        saveMatches();
+        resetMatchForm();
+        renderAll();
+        alert(existing ? "Match updated in this browser." : "Match saved in this browser.");
+      } catch (error) {
+        alert("Could not save the match. Browser storage may be full.");
+      }
+    }
+
+    function getRequestType(request) {
+      return request.type || request.requestType || request.action || "Unknown";
+    }
+
+    function getRequestAmount(request) {
+      return request.amount ?? request.balance ?? 0;
+    }
+
+    function getRequestName(request) {
+      return request.name || request.fullName || request.username || request.userName || "Unknown";
+    }
+
+    function getRequestPhone(request) {
+      return request.phone || request.mobile || request.phoneNumber || "—";
+    }
+
+    function getRequestTransaction(request) {
+      return request.transactionId || request.trxId || request.transaction_id || "—";
+    }
+
+    function renderRequests() {
+      const target = $("requestsTable");
+      const filter = $("requestFilter").value;
+      const query = $("requestSearch").value.trim().toLowerCase();
+
+      const filtered = requests.filter(request => {
+        const status = request.status || "Pending";
+        const matchesFilter = filter === "All" || status.toLowerCase() === filter.toLowerCase();
+        const haystack = [
+          getRequestType(request),
+          getRequestName(request),
+          getRequestPhone(request),
+          getRequestTransaction(request),
+          request.userId,
+          request.email
+        ].join(" ").toLowerCase();
+
+        return matchesFilter && haystack.includes(query);
+      });
+
+      if (!filtered.length) {
+        target.innerHTML = '<div class="empty">No matching requests found.</div>';
+        return;
+      }
+
+      target.innerHTML = '<div class="table-wrap"><table>' +
+        "<thead><tr><th>Type / User</th><th>Amount</th><th>Payment Info</th><th>Date</th><th>Status</th><th>Update</th></tr></thead><tbody>" +
+        filtered.map(request => {
+          const id = request.id ?? request.requestId ?? "";
+          return "<tr>" +
+            "<td><strong>" + escapeHTML(getRequestType(request)) + "</strong><br>" +
+            escapeHTML(getRequestName(request)) + "<br><span class=\"muted\">" +
+            escapeHTML(getRequestPhone(request)) + "</span></td>" +
+            "<td>" + money(getRequestAmount(request)) + "</td>" +
+            "<td>TrxID: " + escapeHTML(getRequestTransaction(request)) + "<br>" +
+            "Method: " + escapeHTML(request.method || request.paymentMethod || "—") + "</td>" +
+            "<td>" + escapeHTML(formatDate(request.createdAt || request.date || request.timestamp)) + "</td>" +
+            "<td>" + statusPill(request.status || "Pending") + "</td>" +
+            '<td><div class="actions">' +
+            '<button class="btn btn-small btn-green" data-request-status="' + escapeHTML(id) + '" data-status="Approved">Approve</button>' +
+            '<button class="btn btn-small" data-request-status="' + escapeHTML(id) + '" data-status="Completed">Complete</button>' +
+            '<button class="btn btn-small btn-red" data-request-status="' + escapeHTML(id) + '" data-status="Rejected">Reject</button>' +
+            '<button class="btn btn-small btn-secondary" data-delete-request="' + escapeHTML(id) + '">Delete</button>' +
+            "</div></td></tr>";
+        }).join("") +
+        "</tbody></table></div>";
+
+      target.querySelectorAll("[data-request-status]").forEach(button => {
+        button.addEventListener("click", () => updateRequestStatus(
+          button.dataset.requestStatus,
+          button.dataset.status
+        ));
+      });
+
+      target.querySelectorAll("[data-delete-request]").forEach(button => {
+        button.addEventListener("click", () => deleteRequest(button.dataset.deleteRequest));
+      });
+    }
+
+    function updateRequestStatus(id, status) {
+      const request = requests.find(item =>
+        String(item.id ?? item.requestId ?? "") === String(id)
+      );
+      if (!request) {
+        alert("Request ID was not found. Check that each request has a unique id.");
+        return;
+      }
+
+      request.status = status;
+      request.updatedAt = new Date().toISOString();
+      saveRequests();
+      renderAll();
+    }
+
+    function deleteRequest(id) {
+      const request = requests.find(item =>
+        String(item.id ?? item.requestId ?? "") === String(id)
+      );
+      if (!request || !confirm("Delete this request from this browser?")) return;
+
+      requests = requests.filter(item =>
+        String(item.id ?? item.requestId ?? "") !== String(id)
+      );
+      saveRequests();
+      renderAll();
+    }
+
+    function renderRecentRequests() {
+      const target = $("recentRequests");
+      const recent = [...requests].sort((a, b) =>
+        String(b.createdAt || b.date || "").localeCompare(
+          String(a.createdAt || a.date || "")
+        )
+      ).slice(0, 5);
+
+      if (!recent.length) {
+        target.innerHTML = '<div class="empty">No requests stored in this browser.</div>';
+        return;
+      }
+
+      target.innerHTML = '<div class="table-wrap"><table>' +
+        "<thead><tr><th>Type</th><th>User</th><th>Amount</th><th>Status</th></tr></thead><tbody>" +
+        recent.map(request => "<tr>" +
+          "<td>" + escapeHTML(getRequestType(request)) + "</td>" +
+          "<td>" + escapeHTML(getRequestName(request)) + "</td>" +
+          "<td>" + money(getRequestAmount(request)) + "</td>" +
+          "<td>" + statusPill(request.status || "Pending") + "</td>" +
+          "</tr>").join("") +
+        "</tbody></table></div>";
+    }
+
+    function fillSettingsForm() {
+      $("settingBrand").value = settings.brand || DEFAULT_SETTINGS.brand;
+      $("settingNagad").value = settings.nagad || DEFAULT_SETTINGS.nagad;
+      $("settingPaymentNote").value = settings.paymentNote || "";
+      $("settingSupport").value = settings.support || "";
+    }
+
+    function saveSettingsForm(event) {
+      event.preventDefault();
+
+      settings = {
+        brand: $("settingBrand").value.trim() || DEFAULT_SETTINGS.brand,
+        nagad: $("settingNagad").value.trim(),
+        paymentNote: $("settingPaymentNote").value.trim(),
+        support: $("settingSupport").value.trim()
+      };
+
+      try {
+        saveSettings();
+        showMessage(
+          "settingsMessage",
+          "Settings saved in this browser. They are not yet synced to the public app.",
+          "success"
+        );
+      } catch (error) {
+        showMessage("settingsMessage", "Could not save settings in browser storage.", "error");
+      }
+    }
+
+    function resetSettings() {
+      if (!confirm("Reset settings to AMINO defaults?")) return;
+      settings = { ...DEFAULT_SETTINGS };
+      saveSettings();
+      fillSettingsForm();
+      showMessage("settingsMessage", "Default settings restored in this browser.", "success");
+    }
+
+    function downloadBackup() {
+      const backup = {
+        app: "AMINO Esports Admin",
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        matches,
+        requests,
+        settings
+      };
+
+      const blob = new Blob([JSON.stringify(backup, null, 2)], {
+        type: "application/json"
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "amino-backup-" + new Date().toISOString().slice(0, 10) + ".json";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+
+      showMessage("backupMessage", "JSON backup download started.", "success");
+    }
+
+    function restoreBackup(file) {
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(String(reader.result || ""));
+
+          if (!data || typeof data !== "object" ||
+              !Array.isArray(data.matches) ||
+              !Array.isArray(data.requests) ||
+              !data.settings || typeof data.settings !== "object") {
+            throw new Error("This file is not a valid AMINO backup.");
+          }
+
+          if (!confirm("Restore backup? Current local data will be replaced.")) return;
+
+          matches = data.matches;
+          requests = data.requests;
+          settings = { ...DEFAULT_SETTINGS, ...data.settings };
+
+          saveMatches();
+          saveRequests();
+          saveSettings();
+          fillSettingsForm();
+          renderAll();
+
+          showMessage("backupMessage", "Backup restored in this browser.", "success");
+        } catch (error) {
+          showMessage(
+            "backupMessage",
+            error.message || "Could not read backup file.",
+            "error"
+          );
+        } finally {
+          $("importFile").value = "";
+        }
+      };
+
+      reader.onerror = () => {
+        showMessage("backupMessage", "Could not read the selected file.", "error");
+      };
+
+      reader.readAsText(file);
+    }
+
+    async function initialize() {
+      $("loginForm").addEventListener("submit", signIn);
+      $("logoutButton").addEventListener("click", signOut);
+      $("matchForm").addEventListener("submit", saveMatch);
+      $("cancelEditButton").addEventListener("click", resetMatchForm);
+      $("settingsForm").addEventListener("submit", saveSettingsForm);
+      $("resetSettingsButton").addEventListener("click", resetSettings);
+      $("requestFilter").addEventListener("change", renderRequests);
+      $("requestSearch").addEventListener("input", renderRequests);
+      $("backupButton").addEventListener("click", downloadBackup);
+      $("exportButton").addEventListener("click", downloadBackup);
+      $("importButton").addEventListener("click", () => $("importFile").click());
+      $("importFile").addEventListener("change", event => {
+        restoreBackup(event.target.files && event.target.files[0]);
+      });
+
+      resetMatchForm();
+
+      if (!window.supabase || typeof window.supabase.createClient !== "function") {
+        showLogin("Supabase library could not load. Check your internet connection and reload.", "error");
+        return;
+      }
+
+      try {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true
+          }
+        });
+
+        const { data, error } = await supabaseClient.auth.getSession();
+        if (error) throw error;
+
+        const user = data && data.session && data.session.user;
+
+        if (user && (user.email || "").toLowerCase() === ADMIN_EMAIL) {
+          showApp(user);
+        } else {
+          if (user) await supabaseClient.auth.signOut();
+          showLogin();
+        }
+
+        supabaseClient.auth.onAuthStateChange((_event, session) => {
+          const sessionUser = session && session.user;
+
+          if (sessionUser &&
+              (sessionUser.email || "").toLowerCase() === ADMIN_EMAIL) {
+            showApp(sessionUser);
+          } else {
+            currentUser = null;
+            showLogin();
+          }
+        });
+      } catch (error) {
+        console.error(error);
+        showLogin(
+          "Could not connect to Supabase. Check the Project URL, Publishable Key, and Auth settings.",
+          "error"
+        );
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", initialize);
+  </script>
 </body>
 </html>

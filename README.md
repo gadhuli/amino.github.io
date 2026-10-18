@@ -1,2 +1,0 @@
-# Gadhuli
-Gadhuli Official Website 

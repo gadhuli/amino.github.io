@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0f0c29">
 <title>AMINO eSports Club</title>
 <style>
-:root{--bg:#0f0c29;--panel:rgba(255,255,255,.055);--line:rgba(255,255,255,.12);--mint:#00ffcc;--purple:#6c5ce7;--pink:#ff007f;--muted:#aaa}
+:root{--bg:#0f0c29;--panel:rgba(255,255,255,.055);--line:rgba(255,255,255,.12);--mint:#00ffcc;--purple:#6c5ce7;--pink:#ff007f;--muted:#aaa;--nagad:#f39c12}
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',sans-serif}
 body{min-height:100vh;padding:14px 14px 94px;color:#fff;background:linear-gradient(135deg,#0f0c29,#1b1b3a,#24243e)}
 button,input,select{font:inherit}button{cursor:pointer}
@@ -30,11 +30,24 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .btn-action{width:100%;padding:13px;border:0;border-radius:10px;color:#061c19;background:linear-gradient(45deg,var(--mint),#6c5ce7);font-weight:800}.btn-action:disabled{opacity:.6;cursor:not-allowed}.btn-secondary{width:100%;padding:12px;margin-top:9px;border-radius:10px;border:1px solid var(--line);color:white;background:rgba(255,255,255,.07);font-weight:700}
 .input-group{margin-bottom:14px}.input-group label{display:block;margin-bottom:6px;color:#bbb;font-size:.85rem}
 .info-box{padding:12px;margin-bottom:18px;border:1px dashed var(--mint);border-radius:10px;background:rgba(0,255,204,.07);font-size:.85rem;line-height:1.5;color:#ddd}
+.nagad-box{padding:14px;margin-bottom:18px;border:1px solid #ff7675;border-radius:12px;background:rgba(214, 48, 49, 0.15);font-size:.88rem;line-height:1.5;color:#fff}
 .status-note{margin-top:10px;color:#aaa;font-size:.78rem;line-height:1.5}.empty-state{text-align:center;padding:22px 10px;color:#aaa;font-size:.9rem}
 .navbar{position:fixed;z-index:10;left:0;bottom:0;width:100%;display:flex;justify-content:space-around;padding:10px 4px calc(8px + env(safe-area-inset-bottom));background:rgba(15,12,41,.97);border-top:1px solid var(--line);backdrop-filter:blur(12px)}
 .nav-item{flex:1;text-align:center;color:#aaa;font-size:.72rem;font-weight:700;cursor:pointer}.nav-item span{display:block;font-size:1.2rem;margin-bottom:3px}.nav-item.active{color:var(--mint)}
 .profile-row{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08)}.profile-row:last-child{border-bottom:0}
 .balance{font-size:2rem;font-weight:900;color:var(--mint);margin:8px 0}
+
+/* Upgrade Profile Styles */
+.profile-header{display:flex;align-items:center;gap:15px;margin-bottom:15px;padding-bottom:15px;border-bottom:1px solid var(--line)}
+.avatar-circle{width:65px;height:65px;border-radius:50%;background:linear-gradient(45deg,var(--mint),var(--purple));display:flex;align-items:center;justify-content:center;font-size:2rem;border:2px solid var(--mint)}
+.avatar-grid{display:flex;gap:10px;margin-top:8px;overflow-x:auto;padding-bottom:8px}
+.avatar-opt{font-size:1.6rem;padding:6px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.05);cursor:pointer}
+.avatar-opt.active{border-color:var(--mint);background:rgba(0,255,204,.2)}
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:15px}
+.stat-box{background:rgba(0,0,0,.3);padding:12px;border-radius:12px;text-align:center;border:1px solid var(--line)}
+.stat-box strong{font-size:1.3rem;color:var(--mint);display:block}
+.stat-box span{font-size:.75rem;color:var(--muted)}
+
 @media(min-width:700px){body{padding-top:22px}.navbar{left:50%;transform:translateX(-50%);max-width:760px}.game-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 </style>
 </head>
@@ -75,8 +88,23 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 <section id="depositPage" class="page">
   <h2 class="section-title">💳 ডিপোজিট রিকোয়েস্ট</h2>
   <div class="card">
-    <div class="info-box"><strong>পেমেন্ট তথ্য:</strong> এখানে কোনো যাচাইকৃত পেমেন্ট নম্বর সেট করা হয়নি। বাস্তব টাকা পাঠানোর আগে অ্যাডমিনের যাচাইকৃত পেমেন্ট তথ্য যুক্ত করতে হবে।</div>
-    <div class="input-group"><label>পেমেন্ট মেথড</label><select id="depositMethod"><option>bKash</option><option>Nagad</option><option>Rocket</option></select></div>
+    <div class="nagad-box">
+      <strong>🟠 নগদ (Nagad) Personal Number:</strong><br>
+      <span style="font-size: 1.1rem; font-weight: 800; color: #ffeaa7;" id="nagadNum">01333088194</span>
+      <button onclick="copyNagad()" style="margin-left: 8px; padding: 2px 8px; border-radius: 5px; background: #d63031; color: white; border: none; font-size: 0.75rem;">কপি করুন</button>
+      <div style="font-size: 0.78rem; margin-top: 6px; color: #dfe6e9;">
+        * উপরের নগদ নম্বরে Send Money করুন। এরপর নিচে আপনার টাকা, প্রেরকের নম্বর এবং TrxID বসিয়ে রিকোয়েস্ট পাঠান।
+      </div>
+    </div>
+    
+    <div class="input-group">
+      <label>পেমেন্ট মেথড</label>
+      <select id="depositMethod">
+        <option value="Nagad">Nagad (নগদ)</option>
+        <option value="bKash">bKash (বিকাশ)</option>
+        <option value="Rocket">Rocket (রকেট)</option>
+      </select>
+    </div>
     <div class="input-group"><label>টাকার পরিমাণ (৳)</label><input id="depositAmount" type="number" min="1" placeholder="যেমন: ১০০"></div>
     <div class="input-group"><label>যে নম্বর থেকে পাঠিয়েছেন</label><input id="depositPhone" type="tel" placeholder="01XXXXXXXXX"></div>
     <div class="input-group"><label>TrxID</label><input id="depositTrx" type="text" placeholder="Transaction ID"></div>
@@ -88,7 +116,14 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 <section id="withdrawPage" class="page">
   <h2 class="section-title">💸 উইথড্র রিকোয়েস্ট</h2>
   <div class="card">
-    <div class="input-group"><label>পেমেন্ট মেথড</label><select id="withdrawMethod"><option>bKash</option><option>Nagad</option><option>Rocket</option></select></div>
+    <div class="input-group">
+      <label>পেমент মেথড</label>
+      <select id="withdrawMethod">
+        <option value="Nagad">Nagad (নগদ)</option>
+        <option value="bKash">bKash (বিকাশ)</option>
+        <option value="Rocket">Rocket (রকেট)</option>
+      </select>
+    </div>
     <div class="input-group"><label>উইথড্র পরিমাণ (ন্যূনতম ১০০ ৳)</label><input id="withdrawAmount" type="number" min="100" placeholder="১০০"></div>
     <div class="input-group"><label>আপনার পেমেন্ট নম্বর</label><input id="withdrawPhone" type="tel" placeholder="01XXXXXXXXX"></div>
     <button class="btn-action" onclick="submitWithdraw()">উইথড্র রিকোয়েস্ট পাঠান</button><p id="withdrawMessage" class="status-note" role="status"></p>
@@ -98,13 +133,41 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 
 <section id="profilePage" class="page">
   <h2 class="section-title">👤 প্লেয়ার প্রোফাইল</h2>
+  
+  <!-- Upgraded Player Badge & Stats -->
   <div class="card">
+    <div class="profile-header">
+      <div class="avatar-circle" id="profileAvatarDisplay">🥷</div>
+      <div>
+        <h3 id="displayPlayerName" style="color:var(--mint); font-size:1.2rem;">গেমার নাম</h3>
+        <p style="font-size: 0.8rem; color:#aaa;">UID: <span id="displayPlayerUid">N/A</span></p>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box"><strong id="statMatches">0</strong><span>মোট জয়েনড ম্যাচ</span></div>
+      <div class="stat-box"><strong id="statWon">০ ৳</strong><span>মোট প্রাইজ মানি</span></div>
+    </div>
+
+    <div class="input-group">
+      <label>অবতার বেছে নিন</label>
+      <div class="avatar-grid">
+        <span class="avatar-opt" onclick="selectAvatar('🥷')">🥷</span>
+        <span class="avatar-opt" onclick="selectAvatar('👑')">👑</span>
+        <span class="avatar-opt" onclick="selectAvatar('👾')">👾</span>
+        <span class="avatar-opt" onclick="selectAvatar('🔥')">🔥</span>
+        <span class="avatar-opt" onclick="selectAvatar('🤖')">🤖</span>
+        <span class="avatar-opt" onclick="selectAvatar('🦁')">🦁</span>
+      </div>
+    </div>
+
     <div class="input-group"><label>আপনার গেমার নাম</label><input id="playerName" type="text" placeholder="গেমার নাম লিখুন"></div>
     <div class="input-group"><label>ইন-গেম UID (ঐচ্ছিক)</label><input id="playerUid" type="text" placeholder="আপনার গেম UID"></div>
     <div class="input-group"><label>মোবাইল নম্বর (ঐচ্ছিক)</label><input id="playerPhone" type="tel" placeholder="01XXXXXXXXX"></div>
-    <button class="btn-action" onclick="saveProfile()">প্রোফাইল সেভ করুন</button>
+    <button class="btn-action" onclick="saveProfile()">প্রোফাইল আপডেট করুন</button>
     <p class="status-note">এই ডেমোতে প্রোফাইল শুধু এই ব্রাউজারের Local Storage-এ সেভ হবে; এটি নিরাপদ অ্যাকাউন্ট লগইন নয়।</p>
   </div>
+
   <div class="card" style="margin-top:14px"><h2 class="section-title">📋 আপনার রিকোয়েস্ট</h2><div id="requestHistory"></div></div>
 </section>
 
@@ -132,6 +195,8 @@ set(key,value){try{localStorage.setItem('amino_'+key,JSON.stringify(value))}catc
 let sampleMatches=store.get('matches',defaultMatches);
 let siteSettings=store.get('settings',{});
 let demoBalance=store.get('balance',50),requests=store.get('requests',[]),joinedMatches=store.get('joined',[]);
+let selectedAvatar = store.get('profile',{}).avatar || '🥷';
+
 function applySiteSettings(){
  const brand=document.querySelector('.logo'); if(brand&&siteSettings.brand)brand.textContent=siteSettings.brand;
  const club=document.querySelector('.brand small'); if(club&&siteSettings.club)club.textContent=siteSettings.club;
@@ -140,8 +205,6 @@ function applySiteSettings(){
  const pill=document.querySelector('.hero .pill'); if(pill&&siteSettings.pill) pill.textContent=siteSettings.pill;
  const notice=document.querySelector('#homePage .status-note'); if(notice&&siteSettings.notice)notice.textContent=siteSettings.notice;
  const title=document.querySelector('title'); if(title&&siteSettings.brand)title.textContent=siteSettings.brand+' eSports Club';
- const pay=document.querySelector('#depositPage .info-box');
- if(pay){const info=siteSettings.paymentInfo||'এখানে কোনো যাচাইকৃত পেমেন্ট নম্বর সেট করা হয়নি। বাস্তব টাকা পাঠানোর আগে অ্যাডমিনের যাচাইকৃত পেমেন্ট তথ্য যুক্ত করতে হবে.';pay.innerHTML='<strong>পেমেন্ট তথ্য:</strong> '+escapeHtml(info).replace(/\n/g,'<br>');}
 }
 window.addEventListener('storage',e=>{if(e.key==='amino_matches'||e.key==='amino_settings'){sampleMatches=store.get('matches',defaultMatches);siteSettings=store.get('settings',{});applySiteSettings();renderMatches();renderAllMatches();}});
 function openPage(pageId){
@@ -171,11 +234,43 @@ function joinMatch(id){
  store.set('joined',joinedMatches);store.set('requests',requests);renderMatches();renderAllMatches();renderRequests();
  alert('ডেমো রিকোয়েস্ট এই ডিভাইসে সেভ হয়েছে। বাস্তব ম্যাচ নিশ্চিত হয়নি।');
 }
-function saveProfile(){
- const p={name:document.getElementById('playerName').value.trim(),uid:document.getElementById('playerUid').value.trim(),phone:document.getElementById('playerPhone').value.trim()};
- if(!p.name){alert('অনুগ্রহ করে আপনার গেমার নাম লিখুন।');return}store.set('profile',p);alert('প্রোফাইল এই ডিভাইসে সেভ হয়েছে।');
+
+function selectAvatar(emoji){
+ selectedAvatar = emoji;
+ document.querySelectorAll('.avatar-opt').forEach(el=>el.classList.toggle('active', el.textContent===emoji));
+ document.getElementById('profileAvatarDisplay').textContent = emoji;
 }
-function loadProfile(){const p=store.get('profile',{});document.getElementById('playerName').value=p.name||'';document.getElementById('playerUid').value=p.uid||'';document.getElementById('playerPhone').value=p.phone||''}
+
+function copyNagad(){
+ navigator.clipboard.writeText('01333088194');
+ alert('নগদ নম্বর (01333088194) কপি হয়েছে!');
+}
+
+function saveProfile(){
+ const p={
+   name:document.getElementById('playerName').value.trim(),
+   uid:document.getElementById('playerUid').value.trim(),
+   phone:document.getElementById('playerPhone').value.trim(),
+   avatar:selectedAvatar
+ };
+ if(!p.name){alert('অনুগ্রহ করে আপনার গেমার নাম লিখুন।');return}
+ store.set('profile',p);
+ loadProfile();
+ alert('প্রোফাইল আপডেট হয়েছে!');
+}
+
+function loadProfile(){
+ const p=store.get('profile',{});
+ document.getElementById('playerName').value=p.name||'';
+ document.getElementById('playerUid').value=p.uid||'';
+ document.getElementById('playerPhone').value=p.phone||'';
+ document.getElementById('displayPlayerName').textContent = p.name || 'গেমার নাম';
+ document.getElementById('displayPlayerUid').textContent = p.uid || 'N/A';
+ selectedAvatar = p.avatar || '🥷';
+ document.getElementById('profileAvatarDisplay').textContent = selectedAvatar;
+ document.getElementById('statMatches').textContent = joinedMatches.length;
+}
+
 function submitDeposit(){
  const method=document.getElementById('depositMethod').value,amount=Number(document.getElementById('depositAmount').value),phone=document.getElementById('depositPhone').value.trim(),trx=document.getElementById('depositTrx').value.trim(),msg=document.getElementById('depositMessage');
  if(!Number.isFinite(amount)||amount<1||!phone||!trx){msg.textContent='পরিমাণ, পাঠানো নম্বর এবং TrxID পূরণ করুন।';return}
@@ -183,21 +278,25 @@ function submitDeposit(){
  msg.textContent='ডেমো ডিপোজিট রিকোয়েস্ট এই ডিভাইসে সেভ হয়েছে; পেমেন্ট যাচাই বা ব্যালেন্স যোগ হয়নি।';
  document.getElementById('depositAmount').value='';document.getElementById('depositPhone').value='';document.getElementById('depositTrx').value='';
 }
+
 function submitWithdraw(){
  const amount=Number(document.getElementById('withdrawAmount').value),phone=document.getElementById('withdrawPhone').value.trim(),msg=document.getElementById('withdrawMessage');
  if(!Number.isFinite(amount)||amount<100||!phone){msg.textContent='কমপক্ষে ১০০ ৳ এবং পেমেন্ট নম্বর লিখুন।';return}
  if(amount>Number(demoBalance)){msg.textContent='ডেমো ব্যালেন্সের চেয়ে বেশি টাকা উইথড্র করা যাবে না।';return}
  msg.textContent='এই ডেমোতে বাস্তব উইথড্র করা যায় না। নিরাপদ সার্ভার ও যাচাইকৃত পেমেন্ট সিস্টেম যুক্ত না হওয়া পর্যন্ত কোনো টাকা পাঠানো হয়নি।';
 }
+
 function renderRequests(){
  const el=document.getElementById('requestHistory');
  el.innerHTML=requests.length?requests.map(r=>`<div class="profile-row"><div><strong>${escapeHtml(r.title)}</strong><div class="status-note">${escapeHtml(r.date||'')} • ${escapeHtml(r.status)}</div></div><strong>${Number(r.amount||0).toLocaleString('bn-BD')} ৳</strong></div>`).join(''):'<div class="empty-state">এখনো কোনো রিকোয়েস্ট নেই।</div>';
 }
+
 function renderTransactions(){
  const el=document.getElementById('transactionHistory'),items=requests.filter(r=>r.type==='Deposit'||r.type==='Withdraw');
  el.innerHTML=items.length?items.map(r=>`<div class="profile-row"><div><strong>${escapeHtml(r.title)}</strong><div class="status-note">${escapeHtml(r.date||'')} • ${escapeHtml(r.status)}</div></div><strong>${Number(r.amount||0).toLocaleString('bn-BD')} ৳</strong></div>`).join(''):'<div class="empty-state">এখনো কোনো লেনদেনের রিকোয়েস্ট নেই।</div>';
 }
-applySiteSettings();updateBalance();renderMatches();renderAllMatches();
+
+applySiteSettings();updateBalance();renderMatches();renderAllMatches();loadProfile();
 </script>
 </body>
 </html>
